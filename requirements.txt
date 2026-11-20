@@ -1,0 +1,11 @@
+# Install vLLM FIRST (it pins its own torch):   pip install vllm
+# Then:                                          pip install -r requirements.txt
+# After the day-1 test works, REPLACE this file with exact versions:  pip freeze | grep -iE "^(vllm|torch|transformers|fastapi|uvicorn|aiohttp|datasets|pandas|matplotlib)=" > requirements.lock
+transformers
+accelerate
+fastapi
+uvicorn
+aiohttp
+datasets
+pandas
+matplotlib

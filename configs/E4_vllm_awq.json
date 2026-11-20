@@ -1,0 +1,29 @@
+{
+  "name": "E4_vllm_awq",
+  "description": "vLLM + AWQ 4-bit weight-only quantisation.",
+  "model": "Qwen/Qwen2.5-3B-Instruct-AWQ",
+  "servers": [
+    {
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct-AWQ --quantization awq --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "url": "http://localhost:8000"
+    }
+  ],
+  "users": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128
+  ],
+  "duration": 90,
+  "max_tokens": 128,
+  "repeats": 3,
+  "prompts": "prompts/dolly_200.jsonl",
+  "startup_timeout": 1200
+}

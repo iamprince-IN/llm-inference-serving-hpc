@@ -1,0 +1,26 @@
+{
+  "name": "E7a_vllm_fp16_tp2",
+  "description": "Scaling: one server, model split over 2 GPUs (tensor parallel).",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "servers": [
+    {
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --tensor-parallel-size 2 --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      },
+      "url": "http://localhost:8000"
+    }
+  ],
+  "users": [
+    1,
+    8,
+    32,
+    64,
+    128
+  ],
+  "duration": 90,
+  "max_tokens": 128,
+  "repeats": 3,
+  "prompts": "prompts/dolly_200.jsonl",
+  "startup_timeout": 1200
+}

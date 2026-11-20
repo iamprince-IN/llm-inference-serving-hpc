@@ -1,0 +1,27 @@
+{
+  "name": "E0_hf_fp16",
+  "description": "Baseline: HF Transformers fp16, one request at a time. 64 users skipped: latency grows linearly and a run would take very long.",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "servers": [
+    {
+      "cmd": "MODEL=Qwen/Qwen2.5-3B-Instruct python -m uvicorn baseline.server_hf:app --host 0.0.0.0 --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "url": "http://localhost:8000"
+    }
+  ],
+  "users": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "duration": 90,
+  "max_tokens": 128,
+  "repeats": 3,
+  "prompts": "prompts/dolly_200.jsonl",
+  "startup_timeout": 1200
+}

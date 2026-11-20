@@ -1,0 +1,1 @@
+{"name": "MOCK_batched", "description": "MOCK", "model": "mock", "servers": [{"cmd": "python -m uvicorn tests.mock_server:app --port 8010", "env": {"MOCK_MODE": "batched", "MOCK_STEP": "0.005"}, "url": "http://localhost:8010"}], "users": [1, 4, 16], "duration": 4, "max_tokens": 32, "repeats": 2, "prompts": "tests/mock_prompts.jsonl", "startup_timeout": 30}

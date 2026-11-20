@@ -1,0 +1,24 @@
+{
+  "name": "E6_vllm_fp16_eager",
+  "description": "Ablation (optional): CUDA graphs disabled, to measure their contribution.",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "servers": [
+    {
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enforce-eager --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "url": "http://localhost:8000"
+    }
+  ],
+  "users": [
+    1,
+    8,
+    32
+  ],
+  "duration": 90,
+  "max_tokens": 128,
+  "repeats": 3,
+  "prompts": "prompts/dolly_200.jsonl",
+  "startup_timeout": 1200
+}

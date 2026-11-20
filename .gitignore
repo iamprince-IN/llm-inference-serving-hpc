@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+results/profiling/baseline_trace.json
+*.nsys-rep
+.ipynb_checkpoints/

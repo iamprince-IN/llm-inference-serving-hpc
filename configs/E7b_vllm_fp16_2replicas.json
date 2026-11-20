@@ -1,0 +1,33 @@
+{
+  "name": "E7b_vllm_fp16_2replicas",
+  "description": "Scaling: two independent replicas, one per GPU, users split round-robin.",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "servers": [
+    {
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "url": "http://localhost:8000"
+    },
+    {
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --port 8001",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "url": "http://localhost:8001"
+    }
+  ],
+  "users": [
+    1,
+    8,
+    32,
+    64,
+    128
+  ],
+  "duration": 90,
+  "max_tokens": 128,
+  "repeats": 3,
+  "prompts": "prompts/dolly_200.jsonl",
+  "startup_timeout": 1200
+}
