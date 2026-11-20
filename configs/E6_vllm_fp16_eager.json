@@ -4,7 +4,7 @@
   "model": "Qwen/Qwen2.5-3B-Instruct",
   "servers": [
     {
-      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enforce-eager --port 8000",
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enforce-eager --port 8000 --no-enable-prefix-caching",
       "env": {
         "CUDA_VISIBLE_DEVICES": "0"
       },

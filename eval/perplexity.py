@@ -33,7 +33,7 @@ def main():
     from vllm import LLM, SamplingParams  # imported late so --help works without vllm
 
     tok = AutoTokenizer.from_pretrained(a.model)
-    text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"])
+    text = "\n\n".join(load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="test")["text"])
     ids = tok(text).input_ids
     W = a.window
     windows = [ids[i:i + W] for i in range(0, len(ids) - W + 1, W)][:a.max_windows]

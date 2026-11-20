@@ -49,7 +49,7 @@ def main():
     print(f"dolly_{a.n}.jsonl: input tokens min={lens[0]} median={lens[len(lens) // 2]} max={lens[-1]}")
 
     # 2) fixed-length controlled prompts
-    text = "\n\n".join(t for t in load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"] if t.strip())
+    text = "\n\n".join(t for t in load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="test")["text"] if t.strip())
     ids = tok(text).input_ids
     L = a.fixed_len
     with open(HERE / f"fixed_{L}.jsonl", "w") as f:
