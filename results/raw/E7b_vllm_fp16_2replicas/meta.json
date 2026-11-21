@@ -1,0 +1,64 @@
+{
+  "config": {
+    "name": "E7b_vllm_fp16_2replicas",
+    "description": "Scaling: two independent replicas, one per GPU, users split round-robin.",
+    "model": "Qwen/Qwen2.5-3B-Instruct",
+    "servers": [
+      {
+        "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --port 8000 --no-enable-prefix-caching",
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "url": "http://localhost:8000"
+      },
+      {
+        "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --port 8001 --no-enable-prefix-caching",
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "1"
+        },
+        "url": "http://localhost:8001"
+      }
+    ],
+    "users": [
+      1,
+      8,
+      32,
+      64,
+      128
+    ],
+    "duration": 90,
+    "max_tokens": 128,
+    "repeats": 3,
+    "prompts": "prompts/dolly_200.jsonl",
+    "startup_timeout": 1200
+  },
+  "env": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "torch": "2.14.0+cu132",
+    "transformers": "5.22.2",
+    "vllm": "0.34.0",
+    "gpu": [
+      "Tesla T4, 15360 MiB, 580.178.04",
+      "Tesla T4, 15360 MiB, 580.178.04"
+    ],
+    "git_commit": "867bdea"
+  },
+  "kv_cache_log_lines": [
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:23 [utils.py:419] Using LBNHC KV cache layout.",
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:27 [gpu_worker.py:795] Available KV cache memory: 6.8 GiB",
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:40 [gpu_worker.py:1175] Free memory on device (14.41/14.56 GiB) on startup. Desired GPU memory utilization is (0.9, 13.11 GiB). Actual usage is 6.06 GiB for consumed memory (weights + non-torch), 0.24 GiB for peak activation, and 0.51 GiB for CUDAGraph memory. ",
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:42 [extensible_kv_cache.py:693] Memory after warmup: 7.75 GiB free, 0.07 GiB committed to the KV cache, 0.46 GiB kept for transient activations (0.3 GiB allocated at peak, 0.46 GiB of torch reservation growth); 2752 KV cache blocks (6.05 GiB) fit within the req",
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:42 [kv_cache_utils.py:1168] GPU KV cache size: 176,128 tokens, Maximum concurrency for 4,096 tokens per request: 43.00x",
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:42 [extensible_kv_cache.py:536] Extended KV cache to 2752 blocks (6.05 GiB).",
+    "E7b_vllm_fp16_2replicas_server0.log: (EngineCore pid=3278) INFO 11-21 06:07:42 [core.py:451] init engine (profile, create kv cache, warmup model) took 19.19 s (compilation: 0.30 s)",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:23 [utils.py:419] Using LBNHC KV cache layout.",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:27 [gpu_worker.py:795] Available KV cache memory: 6.8 GiB",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:40 [gpu_worker.py:1175] Free memory on device (14.41/14.56 GiB) on startup. Desired GPU memory utilization is (0.9, 13.11 GiB). Actual usage is 6.06 GiB for consumed memory (weights + non-torch), 0.24 GiB for peak activation, and 0.51 GiB for CUDAGraph memory. ",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:42 [extensible_kv_cache.py:693] Memory after warmup: 7.75 GiB free, 0.07 GiB committed to the KV cache, 0.46 GiB kept for transient activations (0.3 GiB allocated at peak, 0.46 GiB of torch reservation growth); 2752 KV cache blocks (6.05 GiB) fit within the req",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:42 [kv_cache_utils.py:1168] GPU KV cache size: 176,128 tokens, Maximum concurrency for 4,096 tokens per request: 43.00x",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:42 [extensible_kv_cache.py:536] Extended KV cache to 2752 blocks (6.05 GiB).",
+    "E7b_vllm_fp16_2replicas_server1.log: (EngineCore pid=3285) INFO 11-21 06:07:42 [core.py:451] init engine (profile, create kv cache, warmup model) took 19.14 s (compilation: 0.33 s)"
+  ],
+  "started": "2026-11-21 06:07:47"
+}

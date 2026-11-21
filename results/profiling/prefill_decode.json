@@ -1,0 +1,20 @@
+{
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "gpu": "Tesla T4",
+  "params": 3085938688,
+  "weight_bytes": 6171877376,
+  "kv_bytes_per_token": 36864,
+  "prompt_len": 512,
+  "gen": 128,
+  "prefill_s": 0.20263697100017453,
+  "prefill_tok_per_s": 2526.6860113081684,
+  "decode_tpot_median_s": 0.04221440549918043,
+  "decode_tok_per_s": 23.688596065137396,
+  "decode_theoretical_max_tok_per_s": 51.67031527986296,
+  "MBU_decode": 0.45845658066594674,
+  "MFU_decode": 0.002249278617286525,
+  "MFU_prefill": 0.23991378814536257,
+  "peak_bw": 320000000000.0,
+  "peak_flops": 65000000000000.0,
+  "time_share_prefill_for_full_request": 0.035110242369261226
+}

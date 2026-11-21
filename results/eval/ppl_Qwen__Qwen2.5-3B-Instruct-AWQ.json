@@ -1,0 +1,9 @@
+{
+  "model": "Qwen/Qwen2.5-3B-Instruct-AWQ",
+  "quantization": "awq",
+  "window": 1024,
+  "windows": 100,
+  "tokens_scored": 102300,
+  "perplexity": 10.138764349329755,
+  "seconds": 61.515657901763916
+}

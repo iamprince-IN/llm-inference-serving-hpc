@@ -1,0 +1,8 @@
+{
+  "ref": "fp16",
+  "other": "awq",
+  "prompts": 100,
+  "exact_match_frac": 0.0,
+  "mean_tokens_before_first_divergence": 10.47,
+  "mean_char_similarity": 0.3677268191744946
+}
