@@ -4,8 +4,11 @@ Generate every figure for slides/report from results/ (run benchmarks.metrics fi
   python -m benchmarks.metrics && python plots/make_plots.py
 """
 import json
+import os
 import pathlib
+import re
 
+os.environ["MPLBACKEND"] = "Agg"  # Kaggle sets an inline backend that the venv does not have
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -72,7 +75,7 @@ def scaling_plot(s):
         d = df[df.config == c]
         axes[0].bar(x + (i - .5) * w, d.speedup, w, label=LABELS[c], color=COLORS[c])
         axes[1].bar(x + (i - .5) * w, d.efficiency, w, label=LABELS[c], color=COLORS[c])
-    axes[0].axhline(2, ls="--", color="grey"); axes[0].text(-.4, 2.03, "ideal 2x", color="grey", fontsize=9)
+    axes[0].axhline(2, ls="--", color="grey"); axes[0].text(1.0, 2.04, "ideal 2x", color="grey", fontsize=9, ha="right", transform=axes[0].get_yaxis_transform())
     axes[1].axhline(1, ls="--", color="grey")
     for ax, t in zip(axes, ("Speedup vs 1 GPU (throughput)", "Parallel efficiency = speedup / 2")):
         ax.set_xticks(x, [str(u) for u in common]); ax.set_xlabel("concurrent users"); ax.set_title(t)
@@ -117,6 +120,55 @@ def memory_bar(s):
     print("wrote gpu_memory.png")
 
 
+def kv_capacity_plot():
+    """KV-cache capacity (tokens) per config, parsed from the vLLM start-up log lines saved in meta.json.
+    This (not nvidia-smi memory) is where weight quantisation shows its memory benefit."""
+    rows = []
+    for meta in sorted((RES / "raw").glob("*/meta.json")):
+        m = json.loads(meta.read_text())
+        toks = [int(x.replace(",", "")) for l in m.get("kv_cache_log_lines", [])
+                for x in re.findall(r"GPU KV cache size: ([\d,]+) tokens", l)]
+        if toks:
+            rows.append((meta.parent.name, sum(toks)))   # summed over servers (replicas)
+    if not rows:
+        return
+    rows.sort(key=lambda r: r[1])
+    fig, ax = plt.subplots(figsize=(7.5, 4))
+    bars = ax.barh([LABELS.get(c, c) for c, _ in rows], [t / 1000 for _, t in rows],
+                   color=[COLORS.get(c, "grey") for c, _ in rows])
+    for b, (_, t) in zip(bars, rows):
+        ax.text(b.get_width(), b.get_y() + b.get_height() / 2, f" {t:,}", va="center", fontsize=9)
+    ax.set_xlabel("KV-cache capacity (thousand tokens, all GPUs)")
+    ax.set_title("How many tokens of context fit in GPU memory")
+    ax.set_xlim(0, max(t for _, t in rows) / 1000 * 1.25)
+    ax.grid(alpha=.3, axis="x")
+    fig.tight_layout(); fig.savefig(OUT / "kv_capacity.png"); plt.close(fig)
+    pd.DataFrame(rows, columns=["config", "kv_tokens"]).to_csv(RES / "kv_capacity.csv", index=False)
+    print("wrote kv_capacity.png")
+
+
+def quant_speedup_plot(s):
+    """AWQ / fp16 throughput ratio vs load: large when memory-bound, fades as the batch grows."""
+    a, b = s[s.config == "E4_vllm_awq"], s[s.config == "E3_vllm_fp16"]
+    if a.empty or b.empty:
+        return
+    m = a.merge(b, on="users", suffixes=("_awq", "_fp16"))
+    m["speedup"] = m.out_tok_per_s_mean_awq / m.out_tok_per_s_mean_fp16
+    m["step_ms_awq"], m["step_ms_fp16"] = 1000 * m.tpot_mean_mean_awq, 1000 * m.tpot_mean_mean_fp16
+    m[["users", "speedup", "step_ms_fp16", "step_ms_awq"]].to_csv(RES / "quant_speedup.csv", index=False)
+    fig, ax = plt.subplots(figsize=(7, 4.3))
+    ax.plot(m.users, m.speedup, "o-", color=COLORS["E4_vllm_awq"])
+    for u, v in zip(m.users, m.speedup):
+        ax.annotate(f"{v:.2f}x", (u, v), textcoords="offset points", xytext=(0, 7), ha="center", fontsize=9)
+    ax.axhline(1, ls="--", color="grey")
+    ax.set_xscale("log", base=2); ax.set_xticks(m.users, [str(u) for u in m.users]); ax.minorticks_off()
+    ax.set_xlabel("concurrent users"); ax.set_ylabel("AWQ int4 throughput / fp16 throughput")
+    ax.set_title("Quantisation helps most when decode is memory-bound")
+    ax.set_ylim(0, max(m.speedup) * 1.15); ax.grid(alpha=.3)
+    fig.tight_layout(); fig.savefig(OUT / "quant_speedup_vs_users.png"); plt.close(fig)
+    print("wrote quant_speedup_vs_users.png")
+
+
 def main():
     s = pd.read_csv(RES / "summary.csv")
     present = [c for c in MAIN if c in set(s.config)]
@@ -140,6 +192,8 @@ def main():
                   title="Ablation: CUDA graphs")
     scaling_plot(s)
     static_batching_plot()
+    kv_capacity_plot()
+    quant_speedup_plot(s)
     memory_bar(s)
 
 
