@@ -1,0 +1,24 @@
+{
+  "name": "C5_control_cache",
+  "description": "Optimisation: vLLM fp16 with automatic prefix caching ON (compare with E3, where it is off).",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "servers": [
+    {
+      "cmd": "vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --port 8000 --enable-prefix-caching",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "url": "http://localhost:8000"
+    }
+  ],
+  "users": [
+    1,
+    2,
+    8
+  ],
+  "duration": 60,
+  "max_tokens": 128,
+  "repeats": 2,
+  "prompts": "prompts/dolly_200.jsonl",
+  "startup_timeout": 1200
+}

@@ -1,0 +1,8 @@
+{
+  "ref": "fp16",
+  "other": "fp16b",
+  "prompts": 100,
+  "exact_match_frac": 0.94,
+  "mean_tokens_before_first_divergence": 100.37,
+  "mean_char_similarity": 0.9764248227390644
+}
