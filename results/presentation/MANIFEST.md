@@ -1,0 +1,54 @@
+# Presentation assets
+Generated 2026-11-26 18:16 from commit 55b324d
+
+- `results/presentation/accuracy.csv`: perplexity and output agreement (fp16 re-run and AWQ)
+- `results/presentation/attribution_32_users.csv`: throughput gain broken into steps at 32 users
+- `results/presentation/baseline_queueing.csv`: HF baseline: throughput, TTFT and the queueing prediction
+- `results/presentation/batching_step_times.csv`: decode step time vs users per step
+- `results/presentation/energy_joules_per_token.csv`: energy per output token by configuration and load
+- `results/presentation/goodput_and_cost.csv`: peak goodput and cost per million tokens
+- `results/presentation/hardware.json`: GPU, software versions and datasheet peaks
+- `results/presentation/kv_capacity.csv`: KV-cache capacity in tokens per configuration
+- `results/presentation/mean_power_per_config.csv`: average GPU power per configuration
+- `results/presentation/memory_budget.csv`: vLLM memory budget from the server logs
+- `results/presentation/prefix_caching_and_control.csv`: prefix caching on/off, across sessions and same-session control
+- `results/presentation/quantisation_speedup.csv`: AWQ vs fp16 throughput and step time per load level
+- `results/presentation/scaling.csv`: TP=2 vs replicas: speedup, efficiency, latency
+- `plots/presentation/fig_attribution.png`
+- `plots/presentation/fig_energy.png`
+- `plots/presentation/fig_goodput.png`
+- `plots/presentation/fig_kv_capacity.png`
+- `plots/presentation/fig_memory_budget.png`
+- `plots/presentation/fig_perf_model.png`
+- `plots/presentation/fig_quant_speedup.png`
+- `plots/presentation/fig_scaling_speedup.png`
+- `plots/presentation/fig_throughput_vs_users.png`
+- `plots/presentation/fig_ttft_p95_vs_users.png`
+- `plots/ablation_cuda_graphs.png`
+- `plots/e2e_p95_vs_users.png`
+- `plots/energy_vs_users.png`
+- `plots/gpu_memory.png`
+- `plots/gpu_util_vs_users.png`
+- `plots/kv_capacity.png`
+- `plots/perf_model.png`
+- `plots/quant_speedup_vs_users.png`
+- `plots/scaling_speedup_efficiency.png`
+- `plots/static_batching.png`
+- `plots/throughput_vs_users.png`
+- `plots/tpot_vs_users.png`
+- `plots/ttft_p95_vs_users.png`
+- `results/summary.csv`: all metrics, mean and std over repeats
+- `results/summary_runs.csv`: all metrics, one row per run
+- `results/headline_table.md`
+- `results/perf_model.csv`: model parameters
+- `results/perf_model.md`: two-term performance model report
+- `results/kv_capacity.csv`: KV-cache capacity in tokens per configuration
+- `results/quant_speedup.csv`
+- `results/scaling.csv`: TP=2 vs replicas: speedup, efficiency, latency
+- `results/eval/ppl_Qwen__Qwen2.5-3B-Instruct-AWQ.json`
+- `results/eval/ppl_Qwen__Qwen2.5-3B-Instruct.json`
+- `results/eval/agreement_fp16_vs_awq.json`
+- `results/eval/agreement_fp16_vs_fp16b.json`
+- `results/profiling/prefill_decode.json`
+- `results/profiling/static_batching.json`
+- `results/profiling/torch_profiler_top_ops.txt`

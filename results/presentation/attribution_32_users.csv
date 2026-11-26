@@ -1,0 +1,5 @@
+step,tok_s,x_vs_baseline
+HF sequential,22.92831103733701,1.0
+"+ static batching (offline, B=32)",275.7049904665202,12.024653277668625
++ continuous batching & paging,562.197137423962,24.519779782665488
++ AWQ int4,857.370960865015,37.39355068364397

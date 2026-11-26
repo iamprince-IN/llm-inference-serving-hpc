@@ -1,0 +1,14 @@
+{
+  "gpus": [
+    "Tesla T4, 15360 MiB, 580.178.04",
+    "Tesla T4, 15360 MiB, 580.178.04"
+  ],
+  "python": "3.12.3",
+  "torch": "2.14.0+cu132",
+  "transformers": "5.22.2",
+  "vllm": "0.34.0",
+  "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+  "vcpus": 4,
+  "peak_bandwidth_GBs": 320.0,
+  "peak_fp16_TFLOPs": 65.0
+}

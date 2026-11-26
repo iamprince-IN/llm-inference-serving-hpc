@@ -1,0 +1,9 @@
+config,kv_tokens
+C3_control_nocache,172032
+E5_vllm_fp16_prefix_cache,172032
+C5_control_cache,176128
+E3_vllm_fp16,176128
+E6_vllm_fp16_eager,190464
+E4_vllm_awq,284672
+E7b_vllm_fp16_2replicas,352256
+E7a_vllm_fp16_tp2,495616
