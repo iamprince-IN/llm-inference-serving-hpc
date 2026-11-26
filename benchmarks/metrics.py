@@ -15,7 +15,7 @@ import pandas as pd
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
-def summarize_run(csv_path, gpu_csv=None, slo_ttft=1.0, slo_tpot=0.1):
+def summarize_run(csv_path, gpu_csv=None, slo_ttft=1.0, slo_tpot=0.1, gpu_ids=None):
     df = pd.read_csv(csv_path)
     total = len(df)
     df = df[(df["error"].isna()) | (df["error"] == "")]
@@ -42,25 +42,50 @@ def summarize_run(csv_path, gpu_csv=None, slo_ttft=1.0, slo_tpot=0.1):
         g = pd.read_csv(gpu_csv, skipinitialspace=True)
         for c in ("util_gpu", "mem_used_mib", "power_w"):
             g[c] = pd.to_numeric(g[c], errors="coerce")
+        # Only count the GPUs the experiment actually used (CUDA_VISIBLE_DEVICES of its servers).
+        # Earlier versions averaged in the idle second GPU, which understated power and memory.
+        if gpu_ids is not None:
+            g = g[g["index"].isin(gpu_ids)]
         if not g.empty:
-            per_t = g.groupby("timestamp").agg(util=("util_gpu", "mean"), mem=("mem_used_mib", "sum"),
-                                                power=("power_w", "sum"))
+            # nvidia-smi writes one row per GPU per sample; timestamps differ slightly between GPUs,
+            # so align samples by their order within each GPU instead of by timestamp.
+            g = g.assign(sample=g.groupby("index").cumcount())
+            per_sample = g.groupby("sample").agg(mem=("mem_used_mib", "sum"), power=("power_w", "sum"),
+                                                 n=("index", "nunique"))
+            per_sample = per_sample[per_sample["n"] == g["index"].nunique()]  # complete samples only
             s.update({"gpu_util_mean": g["util_gpu"].mean(),
-                      "gpu_mem_peak_mib": per_t["mem"].max(),       # summed over GPUs in use
-                      "gpu_power_mean_w": per_t["power"].mean()})
+                      "gpu_mem_peak_mib": per_sample["mem"].max(),       # summed over GPUs in use
+                      "gpu_power_mean_w": per_sample["power"].mean(),    # summed over GPUs in use
+                      "n_gpus": int(g["index"].nunique())})
             if s["out_tok_per_s"] > 0:
                 s["joules_per_token"] = s["gpu_power_mean_w"] / s["out_tok_per_s"]
     return s
 
 
+def gpus_used(cfg_dir):
+    """GPU indices an experiment used, from CUDA_VISIBLE_DEVICES in its saved config (None = all)."""
+    meta = cfg_dir / "meta.json"
+    if not meta.exists():
+        return None
+    import json
+    ids = set()
+    for srv in json.loads(meta.read_text()).get("config", {}).get("servers", []):
+        vis = str(srv.get("env", {}).get("CUDA_VISIBLE_DEVICES", "")).strip()
+        if not vis:
+            return None
+        ids.update(int(x) for x in vis.split(",") if x.strip().isdigit())
+    return sorted(ids) or None
+
+
 def build(raw_dir, slo_ttft, slo_tpot):
     rows = []
     for cfg_dir in sorted(p for p in raw_dir.iterdir() if p.is_dir()):
+        gpu_ids = gpus_used(cfg_dir)
         for f in sorted(cfg_dir.glob("u*_r*.csv")):
             m = re.fullmatch(r"u(\d+)_r(\d+)\.csv", f.name)
             if not m:
                 continue
-            s = summarize_run(f, f.with_name(f.stem + "_gpu.csv"), slo_ttft, slo_tpot)
+            s = summarize_run(f, f.with_name(f.stem + "_gpu.csv"), slo_ttft, slo_tpot, gpu_ids)
             s.update({"config": cfg_dir.name, "users": int(m.group(1)), "rep": int(m.group(2))})
             rows.append(s)
     runs = pd.DataFrame(rows)
